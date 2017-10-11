@@ -729,7 +729,13 @@ XKit.extensions.one_click_postage = new Object({
 
 				// Determine where we are going to show the box.
 				var obj = XKit.extensions.one_click_postage.last_icon_object;
-				var offset = $(obj).offset();
+				var offset = $(obj).position();
+				var current_parent = $(obj).parent();
+				while (!$(current_parent).hasClass(".indash_blog")) {
+					offset.left += current_parent.position().left;
+					offset.top += current_parent.position().top;
+					current_parent = current_parent.parent();
+				}
 
 				// Box position
 				var box_left = offset.left - ($("#x1cpostage_box").width() / 2) + 13;
@@ -909,7 +915,7 @@ XKit.extensions.one_click_postage = new Object({
 		$(".reblog_button,.post_control.reblog").filter(':visible').each(function() {
 			if ($(this).hasClass("radar_button")) {return; }
 			var parent_box = $(this).parentsUntil(".post").parent();
-			var box_pos = parent_box.offset().top;
+			var box_pos = parent_box.position().top;
 			if (box_pos <= screen_pos && box_pos + parent_box.innerHeight() > screen_pos) {
 				switch (e.which) {
 				case 68: // 68 = D
@@ -1034,7 +1040,19 @@ XKit.extensions.one_click_postage = new Object({
 
 		if (hide_ui !== true) {
 			// Determine where we are going to show the box.
-			var offset = $(obj).offset();
+			if ($(obj).parents(".peepr-body").length) {
+				$("#x1cpostage_box").insertAfter(".indash_blog");
+			} else {
+				$("#x1cpostage_box").appendTo("body");
+			}
+			var offset = $(obj).position();
+			var current_parent = $(obj).offsetParent();
+			while (!(current_parent.hasClass("peepr-body") || current_parent.is("html"))) {
+				offset.left += current_parent.position().left;
+				offset.top += current_parent.position().top;
+				current_parent = current_parent.offsetParent();
+			}
+
 
 			// Box position
 			var box_left = offset.left - ($("#x1cpostage_box").width() / 2) + 13;
